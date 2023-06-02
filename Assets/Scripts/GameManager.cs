@@ -39,7 +39,7 @@ using UnityEngine;
 
         static void SubmitNewPosition()
         {
-            if (GUILayout.Button(NetworkManager.Singleton.IsServer ? "Move" : "Request Position Change"))
+            if (GUILayout.Button(NetworkManager.Singleton.IsServer ? "Mover a Inicio" : "Request Position Change"))
             {
                 if (NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsClient ){
                 }
@@ -47,6 +47,7 @@ using UnityEngine;
                 {
                     var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
                     var player = playerObject.GetComponent<Player>();
+                    player.Mover();
                 }
             }
         }

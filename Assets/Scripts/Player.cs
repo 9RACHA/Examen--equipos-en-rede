@@ -10,11 +10,23 @@ using UnityEngine;
         // Método que se ejecuta cuando el jugador es creado en la red
         public override void OnNetworkSpawn()
         {
+            // Si es el propietario del objeto (jugador local)
             if (IsOwner)
             {
                 // El propietario del jugador solicita la posición inicial al servidor
                 RequestInitialPositionServerRpc();
+                Mover();
             }
+        }
+
+        public void Mover(){
+            SubmitPositionServerRpc();
+        }
+        
+
+        [ServerRpc]
+        void SubmitPositionServerRpc(ServerRpcParams rpcParams = default){
+            Position.Value = GetCentralPositionOnPlane();
         }
 
         // RPC que se ejecuta en el servidor para generar una posición inicial aleatoria
@@ -22,7 +34,7 @@ using UnityEngine;
         void RequestInitialPositionServerRpc()
         {
             // Genera una posición aleatoria en un plano
-            Position.Value = GetRandomPositionOnPlane();
+            Position.Value = GetCentralPositionOnPlane();
 
             // Actualiza la posición en los clientes para que vean la misma posición inicial
             UpdatePositionClientRpc(Position.Value);
@@ -49,16 +61,20 @@ using UnityEngine;
         }
 
         // Genera una posición aleatoria en un plano
-        static Vector3 GetRandomPositionOnPlane()
+        static Vector3 GetCentralPositionOnPlane()
         {
-            return new Vector3(Random.Range(-5f, 5f), 1f, Random.Range(-5f, 5f));
+            return new Vector3(Random.Range(-1f, 1f), 1f, Random.Range(-3f, 3f)); //Posicion central
         }
 
         void Update()
         {
-            if (IsOwner)
-            {
+            if (IsOwner) {
+
                 Vector3 direction = Vector3.zero;
+
+                if (Input.GetKeyDown(KeyCode.M)){
+                RequestInitialPositionServerRpc();                 
+                } 
 
                 // Detecta las flechas para determinar la dirección del movimiento
                 if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -69,7 +85,8 @@ using UnityEngine;
                     direction = Vector3.back;
                 else if (Input.GetKeyDown(KeyCode.UpArrow))
                     direction = Vector3.forward;
-                
+
+                               
 
                 // Si se presiona alguna tecla de flecha, solicita el cambio de posición al servidor
                 if (direction != Vector3.zero)
