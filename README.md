@@ -37,4 +37,14 @@ En el Update se comprobara constantemente el numero de jugadores en el equipo Az
 ![InicioConsola](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/9029b1b3-f8a8-41fb-9bf9-da5474337800)
 Tambien mediante OnCollisionEnter se comprobara, tanto si es propietario como cliente si el player esta tocando el tag asignado, en este caso "SinEquipo" necesitará un collider asignado en la jerarquia de Unity y un Rigidbody.
 
+Al desplazarse hacia el tag Azul 
+![image](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/d433bf0e-93dd-421c-bc0b-09514a19ca5e)
+![image](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/a20029ff-ec99-48e6-ae4b-c684b834dce3)
+![image](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/13265db2-9bdb-4d34-8a05-b4eb914e055b)
+
+
+
+
+
+
  
