@@ -48,6 +48,15 @@ Al hacer la build y mover los 2 player hacia la derecha
 Los jugadores Pasaran en este caso de Blanco SinEquipo a Rojo -> Equipo Rojo y Blanco Sin Equipo a Rosa -> Equipo Rojo respectivamente. Por tanto habra 2 jugadores en dicho equipo.
 ![image](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/886a2c60-956d-4d7e-a3ad-0aea6d004238)
 
+En el equipo azul ocurrira lo mismo
+![image](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/634e7987-1b93-4ce5-aaae-94d3383a2268)
+
+Los colores se definieron en el script pero se asignaron en el inspector de unity ya que solo consegui 9 colores por codigo y no se correspondian con los que necesitaba.
+Mediante el metodo ObtenerColorAleatorio() y ActualizarColorJugadorClientRpc() hara un aleatorio de entre los 2 equipos seleccionables (3 por equipo) y una vez utilizados los 6 colores los eliminara de la lista y se volveran Blanco.
+![image](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/31587625-7033-48c8-a2d0-679922121ee1)
+
+
+
 
 
 
