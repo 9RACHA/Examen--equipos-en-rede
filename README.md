@@ -29,4 +29,12 @@ Instalar el paquete netcode for gameobjects poniendo en el package manager: com.
 En el script GameManager simplemente se añadio el boton Mover, que hace que se llame al metodo Mover() del script Player y dentro de este si el cliente es propietario hara que se llame a EnviarPosicionServerRpc() este al ser un metodo RPC enviará la posicion actual del jugador al servidor dentro de este se definira la Position como 
 ObtenerPosicionCentralEnPlano() y este es un metodo estatico que pondrá al player siempre en el centro de la escena.
 
+Al comenzar el juego desde Unity como Host 
+![Host](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/d93e846d-19f8-4743-8a3b-f79c70186b6b)
+El player comenzara en el centro Sin un equipo asignado y con el color Blanco. Se llama al metodo OnNetworkSpawn()
+
+En el Update se comprobara constantemente el numero de jugadores en el equipo Azul y Rojo en este caso no hay ningun player.
+![InicioConsola](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/9029b1b3-f8a8-41fb-9bf9-da5474337800)
+Tambien mediante OnCollisionEnter se comprobara, tanto si es propietario como cliente si el player esta tocando el tag asignado, en este caso "SinEquipo" necesitará un collider asignado en la jerarquia de Unity y un Rigidbody.
+
  
