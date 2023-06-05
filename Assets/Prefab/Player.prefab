@@ -171,7 +171,11 @@ MonoBehaviour:
     m_InternalValue: {r: 1, g: 1, b: 1, a: 0}
   Blanco: {r: 1, g: 1, b: 1, a: 0}
   Rojo: {r: 1, g: 0, b: 0, a: 0}
-  Azul: {r: 0.0032367706, g: 0, b: 1, a: 0}
+  Naranja: {r: 1, g: 0.34170598, b: 0, a: 0}
+  Rosa: {r: 1, g: 0, b: 0.3882966, a: 0}
+  Azul: {r: 0, g: 0.35044146, b: 1, a: 0}
+  AzulOscuro: {r: 0.0057048798, g: 0, b: 1, a: 0}
+  AzulClaro: {r: 0, g: 0.55020213, b: 1, a: 0}
 --- !u!54 &5272408454304991819
 Rigidbody:
   m_ObjectHideFlags: 0

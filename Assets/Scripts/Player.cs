@@ -3,25 +3,42 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class Player : NetworkBehaviour
-{
-    //Sincronizar variables en todos los clientes conectados
+public class Player : NetworkBehaviour{
+
+    // Variables de red para la posición, el equipo y el color del jugador
     public NetworkVariable<Vector3> Position = new NetworkVariable<Vector3>();
     public NetworkVariable<int> Team = new NetworkVariable<int>();
     public NetworkVariable<Color> ColorPlayer = new NetworkVariable<Color>();
 
+    // Colores disponibles para los equipos y el color blanco
     public Color Blanco;
     public Color Rojo;
+    public Color Naranja;
+    public Color Rosa;
     public Color Azul;
+    public Color AzulOscuro;
+    public Color AzulClaro;
 
-    private Renderer r;
+    private Renderer r; // Referencia al componente Renderer del jugador
 
-    //Inicializar la variable y establecer referencias a componentes necesarios
-    private void Awake()
-    {
-        r = GetComponent<Renderer>();
+    // Listas de colores disponibles para cada equipo
+    private List<Color> coloresEquipo1 = new List<Color>();
+    private List<Color> coloresEquipo2 = new List<Color>();
+
+    private void Awake(){
+        r = GetComponent<Renderer>(); // Obtener el componente Renderer del jugador
+
+        // Inicializar los colores disponibles para cada equipo
+        coloresEquipo1.Add(Rojo);
+        coloresEquipo1.Add(Naranja);
+        coloresEquipo1.Add(Rosa);
+
+        coloresEquipo2.Add(Azul);
+        coloresEquipo2.Add(AzulOscuro);
+        coloresEquipo2.Add(AzulClaro);
     }
 
+    // Aplicar el color del jugador al material del Renderer
     void AplicarColorJugador()
     {
         r.materials[0].color = ColorPlayer.Value;
@@ -29,9 +46,12 @@ public class Player : NetworkBehaviour
 
     void Start()
     {
+        // Suscribirse al evento OnValueChanged de ColorPlayer
+        ColorPlayer.OnValueChanged += ColorPlayerValueChanged;
         AplicarColorJugador();
     }
 
+    // Método llamado cuando el jugador es spawneado en la red
     public override void OnNetworkSpawn()
     {
         if (IsOwner)
@@ -43,25 +63,35 @@ public class Player : NetworkBehaviour
 
         if (!IsOwner)
         {
-            // Si no es propietario, se sincroniza el color
-            EnColorJugadorCambiado(ColorPlayer.Value, ColorPlayer.Value);
+            ColorJugadorCambiado(ColorPlayer.Value, ColorPlayer.Value);
         }
     }
 
-    void EnColorJugadorCambiado(Color valorAnterior, Color nuevoValor)
+    // Maneja el evento OnValueChanged de ColorPlayer
+    void ColorPlayerValueChanged(Color oldValue, Color newValue){
+    Debug.Log("El valor de ColorPlayer ha cambiado de " + oldValue + " a " + newValue);
+
+    // Cambiar el material del objeto del jugador cuando el valor de ColorPlayer cambia
+    if (r != null && r.materials.Length > 0)
     {
+        r.materials[0].color = newValue;
+    }
+    }
+
+    // Método llamado cuando el color del jugador cambia en el servidor
+    void ColorJugadorCambiado(Color valorAnterior, Color nuevoValor){
         ActualizarColorJugadorCliente(nuevoValor);
     }
 
-    public void Mover()
-    {
+    // Método para solicitar mover al jugador (solo llamado por el cliente dueño del objeto)
+    public void Mover(){
         if (IsOwner)
         {
             EnviarPosicionServerRpc();
         }
     }
 
-    //son llamados desde el cliente y se ejecutan en el servidor
+    // Método RPC para enviar la posición actual del jugador al servidor
     [ServerRpc]
     void EnviarPosicionServerRpc(ServerRpcParams rpcParams = default)
     {
@@ -69,6 +99,7 @@ public class Player : NetworkBehaviour
         ActualizarColorJugadorServerRpc();
     }
 
+    // Solicita la posición inicial del jugador al servidor
     [ServerRpc]
     void SolicitarPosicionInicialServerRpc()
     {
@@ -76,6 +107,7 @@ public class Player : NetworkBehaviour
         ActualizarPosicionClientRpc(Position.Value);
     }
 
+    // Solicita el cambio de posición del jugador al servidor
     [ServerRpc]
     void SolicitarCambioPosicionServerRpc(Vector3 direccion)
     {
@@ -83,13 +115,14 @@ public class Player : NetworkBehaviour
         ActualizarPosicionClientRpc(Position.Value);
     }
 
+    // Solicitar el cambio de equipo del jugador al servidor
     [ServerRpc]
     void SolicitarCambioEquipoServerRpc(int equipo, ServerRpcParams rpcParams = default)
     {
-    CambiarEquipo(equipo);
+        CambiarEquipo(equipo);
     }
 
-    //Sincronizar las actualizaciones de posición y color entre el servidor y los clientes.
+    // Actualiza la posición del jugador en los clientes
     [ClientRpc]
     void ActualizarPosicionClientRpc(Vector3 nuevaPosicion)
     {
@@ -97,6 +130,7 @@ public class Player : NetworkBehaviour
             Position.Value = nuevaPosicion;
     }
 
+    // Método RPC que actualiza el color del jugador en los clientes
     [ServerRpc]
     void ActualizarColorJugadorServerRpc()
     {
@@ -108,29 +142,47 @@ public class Player : NetworkBehaviour
         }
     }
 
+    // Actualizar el color del jugador en un cliente específico
     [ClientRpc]
     void ActualizarColorJugadorClientRpc(int equipo)
     {
         if (equipo == 0) // Sin equipo
             ColorPlayer.Value = Color.white;
-        else if (equipo == 1) // Equipo 1
-            ColorPlayer.Value = Color.blue;
-        else if (equipo == 2) // Equipo 2
-            ColorPlayer.Value = Color.red;
+        else if (equipo == 1) // Equipo 1 (Rojo)
+            ColorPlayer.Value = ObtenerColorAleatorioEquipo(coloresEquipo1);
+        else if (equipo == 2) // Equipo 2 (Azul)
+            ColorPlayer.Value = ObtenerColorAleatorioEquipo(coloresEquipo2);
     }
 
+    // Método para obtener un color aleatorio de un equipo específico
+    Color ObtenerColorAleatorioEquipo(List<Color> coloresEquipo)
+    {
+        if (coloresEquipo.Count == 0)
+        {
+            Debug.LogWarning("No hay colores disponibles en el equipo");
+            return Color.white;
+        }
+
+        int indiceColorAleatorio = Random.Range(0, coloresEquipo.Count);
+        Color colorAleatorio = coloresEquipo[indiceColorAleatorio];
+        coloresEquipo.RemoveAt(indiceColorAleatorio);
+        return colorAleatorio;
+    }
+
+    // Actualizar el color del jugador en un cliente específico y en el Renderer
     void ActualizarColorJugadorCliente(Color color)
     {
         ColorPlayer.Value = color;
         r.materials[0].color = color;
     }
 
+    // Método para obtener una posición central aleatoria en un plano
     static Vector3 ObtenerPosicionCentralEnPlano()
     {
         return new Vector3(Random.Range(-1f, 1f), 1f, Random.Range(-3f, 3f));
     }
 
-    //determinar la posición y el equipo basados en la colisión
+    // Obtiene el equipo correspondiente a una posición dada
     int ObtenerEquipoPorPosicion(Vector3 posicion)
     {
         Collider[] colliders = Physics.OverlapSphere(posicion, 0.1f);
@@ -138,65 +190,65 @@ public class Player : NetworkBehaviour
         foreach (Collider collider in colliders)
         {
             if (collider.CompareTag("Azul"))
-                return 1; // Equipo 1
+                return 2; // Equipo 2 (Azul)
             else if (collider.CompareTag("Rojo"))
-                return 2; // Equipo 2
+                return 1; // Equipo 1 (Rojo)
             else if (collider.CompareTag("SinEquipo"))
-                return 0; // Sin equipo (parte central)
+                return 0; // Sin equipo (parte centro)
         }
 
         return -1; // No se encontró un equipo válido
     }
 
+    // Método para manejar las colisiones del jugador
     void OnCollisionEnter(Collision collision)
-{
-    if (IsOwner && IsClient)
     {
-        if (collision.gameObject.CompareTag("Azul"))
+        if (IsOwner && IsClient)
         {
-            Debug.Log("Colisión con el tag Azul");
-            SolicitarCambioEquipoServerRpc(1);
+            if (collision.gameObject.CompareTag("Azul"))
+            {
+                Debug.Log("Colisión con el tag Azul");
+                SolicitarCambioEquipoServerRpc(2);
+            }
+            else if (collision.gameObject.CompareTag("Rojo"))
+            {
+                Debug.Log("Colisión con el tag Rojo");
+                SolicitarCambioEquipoServerRpc(1);
+            }
+            else if (collision.gameObject.CompareTag("SinEquipo"))
+            {
+                Debug.Log("Colisión con el tag SinEquipo");
+                SolicitarCambioEquipoServerRpc(0);
+            }
         }
-        else if (collision.gameObject.CompareTag("Rojo"))
-        {
-            Debug.Log("Colisión con el tag Rojo");
-            SolicitarCambioEquipoServerRpc(2);
-        }
-        else if (collision.gameObject.CompareTag("SinEquipo"))
-        {
-            Debug.Log("Colisión con el tag SinEquipo");
-            SolicitarCambioEquipoServerRpc(0);
-        }
-    }
     }
 
-    //Cambia el equipo del jugador, verificando si el equipo está lleno y notificando si el movimiento está restringido
+    //Cambiar de equipo
     void CambiarEquipo(int equipo)
     {
-    if (equipo != Team.Value)
-    {
-        int maxJugadoresPorEquipo = 2; // Número máximo de jugadores por equipo
-        int contadorEquipo = ContarJugadoresEnEquipo(equipo);
-
-        if (contadorEquipo >= maxJugadoresPorEquipo)
+        if (equipo != Team.Value)
         {
-            Debug.Log($"El equipo {equipo} está lleno");
-            NotificarMovimientoRestringido();
-            return;
-        }
+            int maxJugadoresPorEquipo = 2; // Número máximo de jugadores por equipo
+            int contadorEquipo = ContarJugadoresEnEquipo(equipo);
 
-        Team.Value = equipo;
-        ActualizarColorJugadorClientRpc(equipo);
+            if (contadorEquipo >= maxJugadoresPorEquipo)
+            {
+                Debug.Log($"El equipo {equipo} está lleno");
+                NotificarMovimientoRestringido();
+                return;
+            }
 
-        // Actualizar el color del jugador cliente local
-        if (IsOwner)
-        {
-            ActualizarColorJugadorCliente(ColorPlayer.Value);
+            Team.Value = equipo;
+            ActualizarColorJugadorClientRpc(equipo);
+
+            if (IsOwner)
+            {
+                ActualizarColorJugadorCliente(ColorPlayer.Value);
+            }
         }
     }
-    }
 
-    // Cuenta el número de jugadores en cada equipo.
+    // Cuenta el número de jugadores en un equipo
     int ContarJugadoresEnEquipo(int equipo)
     {
         int contador = 0;
@@ -208,64 +260,54 @@ public class Player : NetworkBehaviour
                 contador++;
             }
         }
-
         return contador;
     }
 
-
+    // Notifica al jugador que su movimiento está restringido debido a que el equipo está lleno
     void NotificarMovimientoRestringido()
     {
-        // Método para notificar a los jugadores que no pueden moverse porque el equipo está lleno
         Debug.Log("No puedes moverte porque el equipo está lleno");
     }
 
-   void Update(){
-    if (IsOwner)
+    void Update()
     {
-        Vector3 direccion = Vector3.zero;
+        if (IsOwner)
+        {
+            Vector3 direccion = Vector3.zero;
 
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            SolicitarPosicionInicialServerRpc();
-        }
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                SolicitarPosicionInicialServerRpc();
+            }
 
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            direccion = Vector3.left;
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            direccion = Vector3.right;
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            direccion = Vector3.back;
-        }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            direccion = Vector3.forward;
-        }
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                direccion = Vector3.left;
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                direccion = Vector3.right;
+            }
+            else if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                direccion = Vector3.back;
+            }
+            else if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                direccion = Vector3.forward;
+            }
 
-        if (direccion != Vector3.zero)
-        {
-            SolicitarCambioPosicionServerRpc(direccion);
+            if (direccion != Vector3.zero)
+            {
+                SolicitarCambioPosicionServerRpc(direccion);
+            }
         }
+        AplicarColorJugador();
+        transform.position = Position.Value;
+        int contadorEquipoAzul = ContarJugadoresEnEquipo(2);
+        int contadorEquipoRojo = ContarJugadoresEnEquipo(1);
+        int contadorSinEquipo = ContarJugadoresEnEquipo(0);
+        Debug.Log($"Jugadores en el Equipo Azul: {contadorEquipoAzul}");
+        Debug.Log($"Jugadores en el Equipo Rojo: {contadorEquipoRojo}");
     }
-
-    AplicarColorJugador(); 
-
-    transform.position = Position.Value;
-
-    // Mostrar la cantidad de jugadores en cada equipo
-    int contadorEquipoAzul = ContarJugadoresEnEquipo(1);
-    int contadorEquipoRojo = ContarJugadoresEnEquipo(2);
-    int contadorSinEquipo = ContarJugadoresEnEquipo(0);
-
-    Debug.Log($"Jugadores en el Equipo Azul: {contadorEquipoAzul}");
-    Debug.Log($"Jugadores en el Equipo Rojo: {contadorEquipoRojo}");
 }
-
-}
-
-
-
