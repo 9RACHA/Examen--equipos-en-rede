@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 21611555}
   m_Layer: 0
   m_Name: Izquierda-Equipo1
-  m_TagString: Untagged
+  m_TagString: Azul
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -413,7 +413,7 @@ GameObject:
   - component: {fileID: 1174744410}
   m_Layer: 0
   m_Name: Derecha-Equipo2
-  m_TagString: Untagged
+  m_TagString: Rojo
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -589,7 +589,7 @@ GameObject:
   - component: {fileID: 2057587312}
   m_Layer: 0
   m_Name: Centro-SinEquipo
-  m_TagString: Untagged
+  m_TagString: SinEquipo
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

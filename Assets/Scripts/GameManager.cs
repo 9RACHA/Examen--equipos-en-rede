@@ -1,54 +1,60 @@
 using Unity.Netcode;
 using UnityEngine;
 
-    public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour
+{
+    void OnGUI()
     {
-        void OnGUI()
+        GUILayout.BeginArea(new Rect(10, 10, 300, 300));
+        if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
         {
-            GUILayout.BeginArea(new Rect(10, 10, 300, 300));
-            if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer) //Si no esta conectado
+            StartButtons();
+        }
+        else
+        {
+            StatusLabels();
+
+            SubmitNewPosition();
+        }
+
+        GUILayout.EndArea();
+    }
+
+    static void StartButtons()
+    {
+        if (GUILayout.Button("Host")) NetworkManager.Singleton.StartHost();
+        if (GUILayout.Button("Client")) NetworkManager.Singleton.StartClient();
+        if (GUILayout.Button("Server")) NetworkManager.Singleton.StartServer();
+    }
+
+    static void StatusLabels()
+    {
+        var mode = NetworkManager.Singleton.IsHost ?
+            "Host" : NetworkManager.Singleton.IsServer ? "Server" : "Client";
+
+        GUILayout.Label("Transport: " +
+            NetworkManager.Singleton.NetworkConfig.NetworkTransport.GetType().Name);
+        GUILayout.Label("Mode: " + mode);
+    }
+
+    static void SubmitNewPosition()
+    {
+        if (GUILayout.Button(NetworkManager.Singleton.IsServer ? "Mover a Inicio" : "Request Position Change"))
+        {
+            if (NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsClient)
             {
-                StartButtons();
+                var players = NetworkManager.Singleton.ConnectedClientsList;
+                foreach (var player in players)
+                {
+                    player.PlayerObject.GetComponent<Player>().Mover();
+                }
             }
             else
             {
-                StatusLabels();
-
-                SubmitNewPosition();
-            }
-
-            GUILayout.EndArea();
-        }
-
-        static void StartButtons()
-        {
-            if (GUILayout.Button("Host")) NetworkManager.Singleton.StartHost();
-            if (GUILayout.Button("Client")) NetworkManager.Singleton.StartClient();
-            if (GUILayout.Button("Server")) NetworkManager.Singleton.StartServer();
-        }
-
-        static void StatusLabels()
-        {
-            var mode = NetworkManager.Singleton.IsHost ?
-                "Host" : NetworkManager.Singleton.IsServer ? "Server" : "Client";
-
-            GUILayout.Label("Transport: " +
-                NetworkManager.Singleton.NetworkConfig.NetworkTransport.GetType().Name);
-            GUILayout.Label("Mode: " + mode);
-        }
-
-        static void SubmitNewPosition()
-        {
-            if (GUILayout.Button(NetworkManager.Singleton.IsServer ? "Mover a Inicio" : "Request Position Change"))
-            {
-                if (NetworkManager.Singleton.IsServer && !NetworkManager.Singleton.IsClient ){
-                }
-                else
-                {
-                    var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
-                    var player = playerObject.GetComponent<Player>();
-                    player.Mover();
-                }
+                var playerObject = NetworkManager.Singleton.SpawnManager.GetLocalPlayerObject();
+                var player = playerObject.GetComponent<Player>();
+                player.Mover();
             }
         }
     }
+}
