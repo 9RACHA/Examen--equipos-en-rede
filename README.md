@@ -26,5 +26,7 @@ Link ao repositorio co código completo
 Instalar el paquete netcode for gameobjects poniendo en el package manager: com.unity.netcode.gameobjects (Agregar paquete por nombre)
 ![image](https://github.com/9RACHA/E2.0.1-Correccion-Examen/assets/66274956/43bc7f74-38f9-4e16-b541-3319c23b3a48)
 
+En el script GameManager simplemente se añadio el boton Mover, que hace que se llame al metodo Mover() del script Player y dentro de este si el cliente es propietario hara que se llame a EnviarPosicionServerRpc() este al ser un metodo RPC enviará la posicion actual del jugador al servidor dentro de este se definira la Position como 
+ObtenerPosicionCentralEnPlano() y este es un metodo estatico que pondrá al player siempre en el centro de la escena.
 
  
