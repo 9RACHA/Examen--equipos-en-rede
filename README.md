@@ -41,7 +41,12 @@ Al desplazarse hacia el tag Azul
 ![image](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/d433bf0e-93dd-421c-bc0b-09514a19ca5e)
 ![image](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/a20029ff-ec99-48e6-ae4b-c684b834dce3)
 ![image](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/13265db2-9bdb-4d34-8a05-b4eb914e055b)
+Mediante el metodo ColorPlayerValuechanged se podra obtener el color en RGBA desde Blanco hacia Azul en este caso.
 
+Al hacer la build y mover los 2 player hacia la derecha
+![image](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/981617f4-aec9-4c56-9c0b-ead3507dc35c)
+Los jugadores Pasaran en este caso de Blanco SinEquipo a Rojo -> Equipo Rojo y Blanco Sin Equipo a Rosa -> Equipo Rojo respectivamente. Por tanto habra 2 jugadores en dicho equipo.
+![image](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/886a2c60-956d-4d7e-a3ad-0aea6d004238)
 
 
 
