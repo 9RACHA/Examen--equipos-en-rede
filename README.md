@@ -53,6 +53,7 @@ En el equipo azul ocurrira lo mismo
 
 Los colores se definieron en el script pero se asignaron en el inspector de unity ya que solo consegui 9 colores por codigo y no se correspondian con los que necesitaba.
 Mediante el metodo ObtenerColorAleatorio() y ActualizarColorJugadorClientRpc() hara un aleatorio de entre los 2 equipos seleccionables (3 por equipo) y una vez utilizados los 6 colores los eliminara de la lista y se volveran Blanco.
+
 ![image](https://github.com/9RACHA/Examen--equipos-en-rede/assets/66274956/31587625-7033-48c8-a2d0-679922121ee1)
 
 
